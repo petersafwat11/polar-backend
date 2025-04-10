@@ -22,9 +22,13 @@ apiRouter.use(helmet());
 apiRouter.use(mongoSanitize()); // NoSQL injection protection
 apiRouter.use(
   cors({
-    origin: ["http://localhost:3000", "https://trading-dashboard-ebon.vercel.app"],
+    origin: [
+      "http://localhost:3000",
+      "https://trading-dashboard-ebon.vercel.app",
+    ],
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
@@ -45,6 +49,15 @@ if (process.env.NODE_ENV === "development") {
 apiRouter.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
   next();
+});
+
+// Health check endpoint
+apiRouter.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "success",
+    message: "Server is healthy",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Routes

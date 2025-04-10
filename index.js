@@ -43,6 +43,11 @@ mongoose
 const port = process.env.PORT || 8000;
 const app = express();
 
+// Add direct routes for commonly used endpoints to avoid preflight issues
+app.options("*", (req, res) => {
+  res.status(200).end();
+});
+
 // Apply CORS middleware
 app.use(corsMiddleware);
 
@@ -61,10 +66,6 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Add direct routes for commonly used endpoints to avoid preflight issues
-app.options("*", (req, res) => {
-  res.status(200).end();
-});
 
 app.use("/api", apiRouter);
 

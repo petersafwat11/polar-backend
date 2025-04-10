@@ -6,8 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
-    "start": "node --max-old-space-size=512 index.js",
-    "railway-start": "bash start.sh"
+    "start": "node index.js"
   },
   "engines": {
     "node": ">=14.0.0"

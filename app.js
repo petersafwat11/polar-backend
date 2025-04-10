@@ -20,10 +20,6 @@ const apiRouter = express.Router();
 // Security middleware
 apiRouter.use(helmet());
 apiRouter.use(mongoSanitize()); // NoSQL injection protection
-apiRouter.options("*", (req, res) => {
-  res.status(200).end();
-});
-
 
 apiRouter.use(
   cors({
@@ -36,6 +32,10 @@ apiRouter.use(
     credentials: true,
   })
 );
+apiRouter.options("*", (req, res) => {
+  res.status(200).end();
+});
+
 
 // Body parsing
 apiRouter.use(express.json({ limit: "10000kb" }));

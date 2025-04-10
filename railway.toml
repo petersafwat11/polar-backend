@@ -1,0 +1,13 @@
+[build]
+builder = "nixpacks"
+buildCommand = "npm install"
+
+[deploy]
+healthcheckPath = "/health"
+healthcheckTimeout = 300 # in seconds
+restartPolicyType = "on-failure"
+restartPolicyMaxRetries = 5
+
+[start]
+cmd = "node index.js"
+healthcheck = "curl -f http://localhost:$PORT/health || exit 1" 

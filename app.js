@@ -22,7 +22,7 @@ apiRouter.use(helmet());
 apiRouter.use(mongoSanitize()); // NoSQL injection protection
 apiRouter.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "https://trading-dashboard-ebon.vercel.app"],
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })

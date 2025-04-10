@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const path = require("path");
+const cors = require("cors");
 const apiRouter = require("./app");
 
 // Use absolute path to config.env
@@ -41,6 +42,53 @@ mongoose
 
 const port = process.env.PORT || 8000;
 const app = express();
+
+// Configure CORS at the root level
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://trading-dashboard-ebon.vercel.app",
+    ],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+  })
+);
+
+// Handle OPTIONS method for preflight requests
+app.options("*", cors());
+
+// Additional CORS headers middleware
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "https://trading-dashboard-ebon.vercel.app",
+    "http://localhost:3000",
+  ];
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PATCH, DELETE, OPTIONS"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  // Handle preflight requests
+  if (req.method === "OPTIONS") {
+    return res.status(204).send();
+  }
+  next();
+});
 
 // Add root health check
 app.get("/health", (req, res) => {

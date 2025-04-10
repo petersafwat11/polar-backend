@@ -20,17 +20,31 @@ const apiRouter = express.Router();
 // Security middleware
 apiRouter.use(helmet());
 apiRouter.use(mongoSanitize()); // NoSQL injection protection
-apiRouter.use(
-  cors({
-    origin: [
+
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = [
       "http://localhost:3000",
       "https://trading-dashboard-ebon.vercel.app",
-    ],
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+    ];
+    // Allow requests with no origin (like mobile apps, curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+};
+
+apiRouter.use(cors(corsOptions));
+apiRouter.options("*", cors(corsOptions));
 
 // Body parsing
 apiRouter.use(express.json({ limit: "10000kb" }));

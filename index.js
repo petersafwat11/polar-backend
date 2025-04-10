@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const path = require("path");
 const apiRouter = require("./app");
-const corsMiddleware = require("./middlewares/cors");
 
 // Use absolute path to config.env
 dotenv.config({ path: path.join(__dirname, "config.env") });
@@ -43,20 +42,6 @@ mongoose
 const port = process.env.PORT || 8000;
 const app = express();
 
-// Add direct routes for commonly used endpoints to avoid preflight issues
-app.options("*", (req, res) => {
-  res.status(200).end();
-});
-
-// Apply CORS middleware
-app.use(corsMiddleware);
-
-// Debug middleware - log requests
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-  next();
-});
-
 // Add root health check
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -65,7 +50,6 @@ app.get("/health", (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
-
 
 app.use("/api", apiRouter);
 

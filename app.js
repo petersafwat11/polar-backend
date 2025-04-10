@@ -2,6 +2,7 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
+const cors = require("cors");
 const bodyParser = require("body-parser");
 
 // Error handling
@@ -17,12 +18,24 @@ const testimonialsRouter = require("./routes/testimonialsRoutes");
 const apiRouter = express.Router();
 
 // Security middleware
+apiRouter.use(helmet());
+apiRouter.use(mongoSanitize()); // NoSQL injection protection
+apiRouter.options("*", (req, res) => {
+  res.status(200).end();
+});
+
+
 apiRouter.use(
-  helmet({
-    crossOriginResourcePolicy: false,
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://trading-dashboard-ebon.vercel.app",
+    ],
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
-apiRouter.use(mongoSanitize()); // NoSQL injection protection
 
 // Body parsing
 apiRouter.use(express.json({ limit: "10000kb" }));

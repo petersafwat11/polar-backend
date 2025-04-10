@@ -1,2 +1,2 @@
-web: node --max-old-space-size=512 index.js
+web: bash start.sh
 healthcheck: node healthcheck.js 

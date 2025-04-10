@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <title>CORS Test</title>
+    <script>
+      function testAPI() {
+        // Perform a preflight request to test CORS
+        fetch(
+          "https://trading-backend-production-5af8.up.railway.app/api/users/login",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Origin: "https://trading-dashboard-ebon.vercel.app",
+            },
+            body: JSON.stringify({
+              email: "test@example.com",
+              password: "password123",
+            }),
+          }
+        )
+          .then((response) => {
+            document.getElementById("result").textContent =
+              "CORS Request Successful: " + response.status;
+            return response.json();
+          })
+          .then((data) => {
+            console.log(data);
+          })
+          .catch((error) => {
+            document.getElementById("result").textContent =
+              "CORS Error: " + error;
+            console.error("Error:", error);
+          });
+      }
+    </script>
+  </head>
+  <body>
+    <h1>CORS Test Page</h1>
+    <button onclick="testAPI()">Test API with CORS</button>
+    <div id="result"></div>
+  </body>
+</html>

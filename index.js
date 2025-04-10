@@ -2,8 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const path = require("path");
-const cors = require("cors");
 const apiRouter = require("./app");
+const corsMiddleware = require("./middlewares/cors");
 
 // Use absolute path to config.env
 dotenv.config({ path: path.join(__dirname, "config.env") });
@@ -43,50 +43,12 @@ mongoose
 const port = process.env.PORT || 8000;
 const app = express();
 
-// Configure CORS at the root level
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://trading-dashboard-ebon.vercel.app",
-    ],
-    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-  })
-);
+// Apply CORS middleware
+app.use(corsMiddleware);
 
-// Handle OPTIONS method for preflight requests
-app.options("*", cors());
-
-// Additional CORS headers middleware
+// Debug middleware - log requests
 app.use((req, res, next) => {
-  const allowedOrigins = [
-    "https://trading-dashboard-ebon.vercel.app",
-    "http://localhost:3000",
-  ];
-  const origin = req.headers.origin;
-
-  if (allowedOrigins.includes(origin)) {
-    res.header("Access-Control-Allow-Origin", origin);
-  }
-
-  res.header(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PATCH, DELETE, OPTIONS"
-  );
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  res.header("Access-Control-Allow-Credentials", "true");
-
-  // Handle preflight requests
-  if (req.method === "OPTIONS") {
-    return res.status(204).send();
-  }
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
   next();
 });
 
@@ -97,6 +59,11 @@ app.get("/health", (req, res) => {
     message: "Server is healthy",
     timestamp: new Date().toISOString(),
   });
+});
+
+// Add direct routes for commonly used endpoints to avoid preflight issues
+app.options("*", (req, res) => {
+  res.status(200).end();
 });
 
 app.use("/api", apiRouter);

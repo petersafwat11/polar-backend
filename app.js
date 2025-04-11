@@ -17,35 +17,40 @@ const testimonialsRouter = require("./routes/testimonialsRoutes");
 
 const apiRouter = express.Router();
 
-// Security middleware
-apiRouter.use(helmet());
-apiRouter.use(mongoSanitize()); // NoSQL injection protection
+// CORS configuration
+const corsOptions = {
+  origin: [
+    "http://localhost:3000",
+    "https://trading-dashboard-ebon.vercel.app",
+  ],
+  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "Origin",
+    "X-Requested-With",
+    "Accept",
+  ],
+  credentials: true,
+  maxAge: 86400, // 24 hours in seconds
+};
 
-// Enhanced CORS handling with preflight support
+// Apply CORS middleware
+apiRouter.use(cors(corsOptions));
+
+// Handle OPTIONS preflight requests
+apiRouter.options("*", cors(corsOptions));
+
+// Security middleware
 apiRouter.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://trading-dashboard-ebon.vercel.app",
-    ],
-    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "Origin",
-      "X-Requested-With",
-      "Accept",
-    ],
-    credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    contentSecurityPolicy: false,
   })
 );
+apiRouter.use(mongoSanitize()); // NoSQL injection protection
 
-// Handle OPTIONS requests explicitly for preflight
-apiRouter.options("*", cors());
-
-// Body parsing
+// Body parsing middleware
 apiRouter.use(express.json({ limit: "10000kb" }));
 apiRouter.use(express.urlencoded({ extended: false }));
 apiRouter.use(bodyParser.json());
@@ -68,12 +73,12 @@ apiRouter.use((req, res, next) => {
 apiRouter.get("/health", (req, res) => {
   res.status(200).json({
     status: "success",
-    message: "Server is healthy",
+    message: "API router is healthy",
     timestamp: new Date().toISOString(),
   });
 });
 
-// Routes
+// Main routes
 apiRouter.use("/users", userRouter);
 apiRouter.use("/courses", coursesRouter);
 apiRouter.use("/social", socialRouter);

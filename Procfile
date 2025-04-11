@@ -1,1 +1,1 @@
-web: NODE_ENV=production node index.js 
+web: NODE_ENV=production node --unhandled-rejections=strict index.js 

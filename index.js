@@ -25,12 +25,14 @@ if (fs.existsSync(configEnvPath)) {
 process.on("uncaughtException", (err) => {
   console.log("UNCAUGHT EXCEPTION! 💥 Shutting down...");
   console.log(err.name, err.message);
+  console.error(err.stack);
   process.exit(1);
 });
 
 process.on("unhandledRejection", (err) => {
   console.log("UNHANDLED REJECTION! 💥 Shutting down...");
   console.log(err.name, err.message);
+  console.error(err.stack);
   process.exit(1);
 });
 
@@ -100,15 +102,34 @@ const startServer = async () => {
     });
 
     // Handle SIGTERM signal
-    process.on("SIGTERM", () => {
+    process.on("SIGTERM", async () => {
       console.log("SIGTERM received. Shutting down gracefully...");
-      server.close(() => {
-        console.log("Server closed.");
-        mongoose.connection.close(false, () => {
-          console.log("MongoDB connection closed.");
-          process.exit(0);
+
+      try {
+        // Close the server with timeout
+        await new Promise((resolve, reject) => {
+          // Set a timeout of 10 seconds
+          const timeout = setTimeout(() => {
+            console.log("Server close timed out, forcing shutdown.");
+            resolve();
+          }, 10000);
+
+          server.close(() => {
+            clearTimeout(timeout);
+            console.log("Server closed.");
+            resolve();
+          });
         });
-      });
+
+        // Close DB connection (without callback - Mongoose 8.x style)
+        await mongoose.connection.close();
+        console.log("MongoDB connection closed.");
+
+        process.exit(0);
+      } catch (err) {
+        console.error("Error during graceful shutdown:", err);
+        process.exit(1);
+      }
     });
 
     // Keep-alive for Railway

@@ -17,40 +17,21 @@ const testimonialsRouter = require("./routes/testimonialsRoutes");
 
 const apiRouter = express.Router();
 
-// CORS configuration
-const corsOptions = {
-  origin: [
-    "http://localhost:3000",
-    "https://trading-dashboard-ebon.vercel.app",
-  ],
-  methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-    "Origin",
-    "X-Requested-With",
-    "Accept",
-  ],
-  credentials: true,
-  maxAge: 86400, // 24 hours in seconds
-};
-
-// Apply CORS middleware
-apiRouter.use(cors(corsOptions));
-
-// Handle OPTIONS preflight requests
-apiRouter.options("*", cors(corsOptions));
-
 // Security middleware
+apiRouter.use(helmet());
+apiRouter.use(mongoSanitize()); // NoSQL injection protection
 apiRouter.use(
-  helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" },
-    contentSecurityPolicy: false,
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://trading-dashboard-ebon.vercel.app",
+    ],
+    methods: ["GET", "POST", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-apiRouter.use(mongoSanitize()); // NoSQL injection protection
 
-// Body parsing middleware
+// Body parsing
 apiRouter.use(express.json({ limit: "10000kb" }));
 apiRouter.use(express.urlencoded({ extended: false }));
 apiRouter.use(bodyParser.json());
@@ -69,16 +50,7 @@ apiRouter.use((req, res, next) => {
   next();
 });
 
-// Health check endpoint
-apiRouter.get("/health", (req, res) => {
-  res.status(200).json({
-    status: "success",
-    message: "API router is healthy",
-    timestamp: new Date().toISOString(),
-  });
-});
-
-// Main routes
+// Routes
 apiRouter.use("/users", userRouter);
 apiRouter.use("/courses", coursesRouter);
 apiRouter.use("/social", socialRouter);

@@ -25,14 +25,8 @@ const DB = process.env.DATABASE.replace(
   process.env.DATABASE_PASSWORD
 );
 
-// Add connection options with timeout
-const mongooseOptions = {
-  serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-  socketTimeoutMS: 45000, // Close sockets after 45s instead of default
-};
-
 mongoose
-  .connect(DB, mongooseOptions)
+  .connect(DB)
   .then(() => console.log("DB connection successful!"))
   .catch((err) => {
     console.error("DB connection error:", err);

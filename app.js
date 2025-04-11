@@ -21,21 +21,29 @@ const apiRouter = express.Router();
 apiRouter.use(helmet());
 apiRouter.use(mongoSanitize()); // NoSQL injection protection
 
+// Enhanced CORS handling with preflight support
 apiRouter.use(
   cors({
     origin: [
       "http://localhost:3000",
       "https://trading-dashboard-ebon.vercel.app",
     ],
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Origin",
+      "X-Requested-With",
+      "Accept",
+    ],
     credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   })
 );
-apiRouter.options("*", (req, res) => {
-  res.status(200).end();
-});
 
+// Handle OPTIONS requests explicitly for preflight
+apiRouter.options("*", cors());
 
 // Body parsing
 apiRouter.use(express.json({ limit: "10000kb" }));

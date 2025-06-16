@@ -13,8 +13,6 @@ router
   .route("/:id")
   .patch(courseController.updateCourse)
   .get(courseController.getCourse)
-  .delete(
-    courseController.deleteCourse
-  );
+  .delete(courseController.deleteCourse);
 
 module.exports = router;

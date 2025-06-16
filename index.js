@@ -7,16 +7,18 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 
 // Error handling
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");
 
 // Routes
-const userRouter = require("./routes/userRoutes");
-const coursesRouter = require("./routes/coursesRoutes");
-const socialRouter = require("./routes/socialRoutes");
-const testimonialsRouter = require("./routes/testimonialsRoutes");
+const userRoutes = require("./routes/userRoutes");
+const adminRoutes = require("./routes/adminsRoutes");
+const courseRoutes = require("./routes/coursesRoutes");
+const socialRoutes = require("./routes/socialRoutes");
+const testimonialRoutes = require("./routes/testimonialsRoutes");
 
 // Use absolute path to config.env
 dotenv.config({ path: path.join(__dirname, "config.env") });
@@ -44,7 +46,9 @@ apiRouter.use(
   cors({
     origin: [
       "http://localhost:3000",
+      "http://localhost:3001",
       "https://trading-dashboard-ebon.vercel.app",
+      "https://trading-snowy-mu.vercel.app",
     ],
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -55,6 +59,7 @@ apiRouter.use(
 apiRouter.use(express.json({ limit: "10000kb" }));
 apiRouter.use(express.urlencoded({ extended: false }));
 apiRouter.use(bodyParser.json());
+apiRouter.use(cookieParser());
 
 // Static files
 apiRouter.use(express.static(`${__dirname}/public`));
@@ -71,10 +76,11 @@ apiRouter.use((req, res, next) => {
 });
 
 // Routes
-apiRouter.use("/users", userRouter);
-apiRouter.use("/courses", coursesRouter);
-apiRouter.use("/social", socialRouter);
-apiRouter.use("/testimonials", testimonialsRouter);
+apiRouter.use("/users", userRoutes);
+apiRouter.use("/admins", adminRoutes);
+apiRouter.use("/courses", courseRoutes);
+apiRouter.use("/social", socialRoutes);
+apiRouter.use("/testimonials", testimonialRoutes);
 
 // Handle unmatched routes
 apiRouter.all("*", (req, res, next) => {

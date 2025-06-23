@@ -8,7 +8,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-
+//trading-backend/index.js
 // Error handling
 const AppError = require("./utils/appError");
 const globalErrorHandler = require("./controllers/errorController");

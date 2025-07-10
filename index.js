@@ -52,6 +52,7 @@ apiRouter.use(
     ],
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // This allows credentials to be sent with cross-origin requests
   })
 );
 

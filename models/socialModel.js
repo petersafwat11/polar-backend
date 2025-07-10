@@ -16,6 +16,21 @@ const socialSchema = new mongoose.Schema({
     required: [true, "A social media profile must have an Instagram URL"],
     trim: true,
   },
+  youtube: {
+    type: String,
+    required: [true, "A social media profile must have a Youtube URL"],
+    trim: true,
+  },
+  linkedin: {
+    type: String,
+    required: [true, "A social media profile must have a Linkedin URL"],
+    trim: true,
+  },
+  whatsapp: {
+    type: String,
+    required: [true, "A social media profile must have a Whatsapp URL"],
+    trim: true,
+  },
 });
 
 const Social = mongoose.model("Social", socialSchema);

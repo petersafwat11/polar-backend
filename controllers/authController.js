@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const { promisify } = require("util");
 const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
+const Admin = require("../models/administratorModel");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const sendEmail = require("../utils/email");
@@ -43,13 +44,13 @@ exports.createAdmin = catchAsync(async (req, res, next) => {
   }
 
   // Check if user with email already exists
-  const existingUser = await User.findOne({ email });
+  const existingUser = await Admin.findOne({ email });
   if (existingUser) {
     return next(new AppError("User with this email already exists", 400));
   }
 
   // Create new admin user
-  const user = await User.create({
+  const user = await Admin.create({
     name,
     email,
     password,
@@ -127,6 +128,37 @@ exports.login = catchAsync(async (req, res, next) => {
 
   createSendToken(user, 200, res);
 });
+exports.loginAdmin = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Please provide email",
+    });
+  }
+
+  if (!password) {
+    return res.status(400).json({
+      status: "fail",
+      message: "Please provide password",
+    });
+  }
+
+  const user = await Admin.findOne({
+    $or: [{ email }],
+  }).select("+password");
+
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return res.status(401).json({
+      status: "fail",
+      message: "Incorrect email or password",
+    });
+  }
+
+  createSendToken(user, 200, res);
+});
+
 exports.logout = (req, res) => {
   res.cookie("jwt", "loggedout", {
     expires: new Date(Date.now() + 10 * 1000),

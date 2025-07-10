@@ -46,9 +46,8 @@ apiRouter.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "http://localhost:3001",
-      "https://trading-dashboard-ebon.vercel.app",
-      "https://trading-snowy-mu.vercel.app",
+      "https://polar-dashboard.vercel.app",
+      "https://polar-vert.vercel.app",
     ],
     methods: ["GET", "POST", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

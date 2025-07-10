@@ -49,11 +49,25 @@ apiRouter.use(
       "https://polar-dashboard.vercel.app",
       "https://polar-vert.vercel.app",
     ],
-    methods: ["GET", "POST", "PATCH", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // This allows credentials to be sent with cross-origin requests
+    methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Origin",
+      "X-Requested-With",
+      "Accept",
+      "Access-Control-Request-Method",
+      "Access-Control-Request-Headers",
+    ],
+    exposedHeaders: ["Set-Cookie"],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   })
 );
+
+// Handle preflight requests
+apiRouter.options("*", cors());
 
 // Body parsing
 apiRouter.use(express.json({ limit: "10000kb" }));

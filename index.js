@@ -46,6 +46,8 @@ apiRouter.use(
   cors({
     origin: [
       "http://localhost:3000",
+      "https://www.polartradingservices.com",
+      "https://polartradingservices.com",
       "https://polar-dashboard.vercel.app",
       "https://polar-vert.vercel.app",
     ],

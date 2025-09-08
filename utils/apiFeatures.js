@@ -16,6 +16,8 @@ class APIFeatures {
       "searchValue",
       "skip",
       "otherCategory",
+      "priceFrom",
+      "priceTo",
     ];
     excludedFields.forEach((el) => delete queryObj[el]);
     // 1B) Advanced filtering
@@ -44,6 +46,20 @@ class APIFeatures {
         $nin: ["football", "basketball", "nfl", "fights"],
       };
     }
+
+    // Add price range filtering
+    if (this.queryString.priceFrom || this.queryString.priceTo) {
+      queryStr.price = {};
+
+      if (this.queryString.priceFrom) {
+        queryStr.price.$gte = parseFloat(this.queryString.priceFrom);
+      }
+
+      if (this.queryString.priceTo) {
+        queryStr.price.$lte = parseFloat(this.queryString.priceTo);
+      }
+    }
+
     this.query = this.query.find(queryStr);
 
     return this;

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema({
-  courseCategory: {
+  category: {
     type: String,
     required: [
       true,
@@ -9,7 +9,7 @@ const courseSchema = new mongoose.Schema({
     ],
     trim: true,
   },
-  packageName: {
+  title: {
     type: String,
     required: [
       true,
@@ -17,7 +17,7 @@ const courseSchema = new mongoose.Schema({
     ],
     trim: true,
   },
-  packageDescription: {
+  details: {
     type: String,
     required: [
       true,
@@ -25,7 +25,16 @@ const courseSchema = new mongoose.Schema({
     ],
     trim: true,
   },
-  packagePrice: {
+
+  description: {
+    type: String,
+    required: [
+      true,
+      "Package description is required. Please provide details about this package",
+    ],
+    trim: true,
+  },
+  price: {
     type: String,
     required: [
       true,
@@ -33,6 +42,16 @@ const courseSchema = new mongoose.Schema({
     ],
     trim: true,
   },
+  discount: {
+    type: String,
+    default: "0",
+  },
+
+  level: {
+    type: String,
+    default: "Beginner",
+  },
+  reviews: [{ reviewerName: String, review: String, rating: Number }],
 });
 
 const Course = mongoose.model("Course", courseSchema);
